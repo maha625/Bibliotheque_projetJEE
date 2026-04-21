@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    active: dev # Par défaut, on travaille en mode développement
+
+server:
+  port: 8080
