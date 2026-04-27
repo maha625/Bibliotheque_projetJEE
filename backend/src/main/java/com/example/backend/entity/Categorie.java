@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,5 +15,6 @@ public class Categorie {
     private String libelle;
 
     @OneToMany(mappedBy = "categorie")
+    @JsonIgnore
     private List<Livre> livres;
 }

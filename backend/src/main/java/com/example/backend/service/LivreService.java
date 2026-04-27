@@ -1,6 +1,7 @@
 package com.example.backend.service;
 
 
+import com.example.backend.entity.DetailsLivre;
 import com.example.backend.entity.Livre;
 import com.example.backend.repository.LivreRepository;
 import jakarta.transaction.Transactional;
@@ -15,6 +16,9 @@ public class LivreService {
     private LivreRepository livreRepository;
 
     public Livre enregistrerLivre(Livre livre){
+        if (livre.getDetails() != null) {
+            livre.getDetails().setLivre(livre);
+        }
         return livreRepository.save(livre);
     }
 
@@ -32,7 +36,11 @@ public class LivreService {
         livre.setTitre(livreDetails.getTitre());
         livre.setIsbn(livreDetails.getIsbn());
         livre.setCategorie(livreDetails.getCategorie());
-        livre.setDetails(livreDetails.getDetails());
+        DetailsLivre detailsLivre=livre.getDetails();
+        detailsLivre.setAuteur(livreDetails.getDetails().getAuteur());
+        detailsLivre.setNombrePages(livreDetails.getDetails().getNombrePages());
+        detailsLivre.setEmplacementRayon(livreDetails.getDetails().getEmplacementRayon());
+        livre.setDetails(detailsLivre);
         return livreRepository.save(livre);
     }
 }

@@ -9,7 +9,13 @@ public class LivreDTO {
     private Long id;
     private String titre;
     private String isbn;
-    private Long categorieId; // On utilise l'ID de la catégorie au lieu de l'objet complet
+    private CategoriesDTO categorie;
     private DetailsLivre details;
+
+    @Data
+    public static class CategoriesDTO{
+        private Long id;
+        private String libelle;
+    }
 
 }

@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("api/livres")
+@CrossOrigin("*")
 public class LivreController {
     @Autowired
     private LivreService livreService;
@@ -30,12 +31,12 @@ public class LivreController {
         List<Livre>livres =livreService.listerTousLesLivres();
         return livreMapper.toDTOs(livres);
     }
-    @DeleteMapping("/id")
+    @DeleteMapping("/{id}")
     public String supprimerLivre(@PathVariable Long id){
         livreService.supprimerLivre(id);
         return "livre supprime avec succes";
     }
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public LivreDTO modifierLivre(@PathVariable Long id,@RequestBody LivreDTO livredto){
         Livre entity= livreMapper.toEntity(livredto);
         Livre modifie = livreService.modifierLivre(id, entity);

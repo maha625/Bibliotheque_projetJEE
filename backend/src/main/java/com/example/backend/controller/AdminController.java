@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/admin/users")
-@CrossOrigin(origins = "http://localhost:5173") // URL par défaut de Vite
+@CrossOrigin("*") // URL par défaut de Vite
 public class AdminController {
 
     @Autowired

@@ -1,5 +1,6 @@
 package com.example.backend.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -15,5 +16,6 @@ public class DetailsLivre {
     private String auteur;
     @OneToOne
     @JoinColumn(name = "livre_id")
+    @JsonIgnore
     private Livre livre;
 }
