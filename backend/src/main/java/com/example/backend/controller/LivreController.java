@@ -42,5 +42,10 @@ public class LivreController {
         Livre modifie = livreService.modifierLivre(id, entity);
         return livreMapper.toDTO(modifie);
     }
+    @GetMapping("/{id}")
+    public LivreDTO obtenirLivreParId(@PathVariable Long id) {
+        Livre livre = livreService.trouverParId(id);
+        return livreMapper.toDTO(livre);
+    }
 
 }

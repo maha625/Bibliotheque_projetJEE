@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard.jsx';
 import AjouterLivre from './pages/Add_livre.jsx';
 import Add_Categorie from './pages/Add_Categorie.jsx';
 import ListCategorie from './pages/ListCategorie.jsx';
+import Modifier_livre from './pages/Modifier_livre.jsx';
 function App() {
   return (
     <Router>
@@ -23,6 +24,7 @@ function App() {
           <Route path='/ajouter-livre' element={<AjouterLivre />} />
           <Route path='/ajouter-categorie' element={<Add_Categorie />} />
           <Route path='/listCategorie' element={<ListCategorie />} />
+          <Route path='/modifier-livre/:id' element={<Modifier_livre />} />
           {/* Route par défaut si l'URL n'existe pas */}
           <Route path="*" element={<h2>404 - Page non trouvée</h2>} />
         </Routes>

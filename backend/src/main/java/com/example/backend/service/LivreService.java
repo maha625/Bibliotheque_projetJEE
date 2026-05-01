@@ -43,4 +43,8 @@ public class LivreService {
         livre.setDetails(detailsLivre);
         return livreRepository.save(livre);
     }
+    public Livre trouverParId(Long id) {
+        return livreRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Livre non trouvé avec l'id: " + id));
+    }
 }
