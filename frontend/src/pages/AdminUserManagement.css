@@ -1,0 +1,242 @@
+/* AdminUserManagement.css */
+/* À ajouter tout en haut de AdminUserManagement.css */
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: #fcfbf7; /* Donne la couleur crème à l'intégralité du site */
+}
+/* Base container with a warm, paper-like background */
+.library-admin-container {
+    padding: 40px;
+    background-color: #fcfbf7; /* Warm book-page cream */
+    min-height: 100vh;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #2c2520; /* Soft charcoal brown instead of harsh black */
+}
+
+/* Header section styling */
+.library-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid #2c3e2b; /* Deep botanical green line */
+    padding-bottom: 15px;
+    margin-bottom: 35px;
+}
+
+.library-header h2 {
+    margin: 0;
+    font-size: 2.2rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #1c2e1f; /* Deep library green */
+    letter-spacing: -0.5px;
+}
+
+/* The chic "Archivist" button */
+.btn-add-user {
+    background-color: #2c3e2b; /* Deep Forest Green */
+    color: #fcfbf7;
+    border: 1px solid #1c2e1f;
+    padding: 10px 20px;
+    font-family: 'Georgia', serif;
+    font-size: 0.95rem;
+    font-style: italic;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.btn-add-user:hover {
+    background-color: #3d543c;
+    transform: translateY(-1px);
+}
+
+/* Minimalist classic ledger table */
+.library-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 1rem;
+    background: transparent;
+}
+
+.library-table th {
+    font-weight: bold;
+    font-style: italic;
+    text-transform: lowercase; /* Gives a poetic, editorial feel */
+    letter-spacing: 1px;
+    color: #5c534c;
+    border-bottom: 1px solid #2c3e2b;
+    padding: 12px 15px;
+    text-align: left;
+}
+
+.library-table td {
+    padding: 16px 15px;
+    border-bottom: 1px solid #e6e3da; /* Subtle paper-crease divider */
+    color: #3a332d;
+}
+
+/* Row hover effect mimicking scanning a line with a reading ruler */
+.library-table tbody tr:hover {
+    background-color: #f5f2e9;
+}
+
+/* Badge styling for user roles */
+.role-badge {
+    font-family: monospace; /* Sharp contrast for technical system roles */
+    font-size: 0.85rem;
+    background-color: #e6e8e3;
+    color: #2c3e2b;
+    padding: 4px 8px;
+    border-radius: 3px;
+    border: 1px solid #cbd1c5;
+}
+
+/* Minimalist text-link action buttons */
+.btn-action-modify {
+    background: none;
+    border: none;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #4a6b53;
+    cursor: pointer;
+    padding: 0;
+    margin-right: 15px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.btn-action-modify:hover {
+    color: #2c3e2b;
+}
+
+.btn-action-delete {
+    background: none;
+    border: none;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #a44a4a; /* Muted vintage crimson */
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.btn-action-delete:hover {
+    color: #7a3131;
+}
+/* --- NOUVEAUX STYLES POUR LE POPUP (MODAL) --- */
+
+/* Arrière-plan semi-transparent */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(44, 37, 32, 0.4); /* Voile brun transparent */
+    backdrop-filter: blur(2px); /* Léger flou artistique en arrière-plan */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* La boîte de dialogue style "Fiche de bibliothèque" */
+.modal-box {
+    background-color: #fcfbf7; /* Même papier crème */
+    border: 1px solid #2c3e2b;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    padding: 30px;
+    width: 400px;
+    max-width: 90%;
+    animation: fadeInModal 0.25s ease-out;
+}
+
+@keyframes fadeInModal {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 1.4rem;
+    font-weight: 400;
+    font-style: italic;
+    color: #1c2e1f;
+    border-bottom: 1px dashed #2c3e2b;
+    padding-bottom: 10px;
+}
+
+.modal-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: #5c534c;
+    text-transform: lowercase;
+}
+
+/* Inputs, Selects au design d'archive */
+.form-group input, 
+.form-group select {
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid #b5b0a3;
+    padding: 8px 4px;
+    font-family: 'Georgia', serif;
+    font-size: 1rem;
+    color: #2c2520;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    border-bottom: 1px solid #2c3e2b; /* Devient vert foncé au focus */
+}
+
+/* Boutons du bas */
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.btn-cancel {
+    background: none;
+    border: none;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    color: #a44a4a;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.btn-submit {
+    background-color: #2c3e2b;
+    color: #fcfbf7;
+    border: 1px solid #1c2e1f;
+    padding: 8px 20px;
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background-color: #3d543c;
+}
