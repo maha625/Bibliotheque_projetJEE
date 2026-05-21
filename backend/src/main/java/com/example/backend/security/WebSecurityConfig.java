@@ -59,14 +59,24 @@ public class WebSecurityConfig {
         return authConfig.getAuthenticationManager();
     }
 
-    @Bean
+   @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                // 1. ADD THIS LINE FIRST: Integrates the CorsFilter bean we created above
+                .cors(cors -> cors.configure(http)) 
+                
+                .csrf(csrf -> csrf.disable())
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        // 2. ADD THIS LINE: Explicitly permits browser preflight checks to pass through safely
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() 
+                        
+                        .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/swagger/**", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs").permitAll()
                         .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+                        // Tout le monde (y compris USER) peut LIRE les catégories
+                        .requestMatchers(HttpMethod.GET, "/api/categories/**").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                         .requestMatchers("/api/categories/**").hasAnyAuthority("ADMIN", "MANAGER")
                         .requestMatchers(HttpMethod.GET, "/api/livres/**").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                         .requestMatchers("/api/livres/**").hasAnyAuthority("ADMIN", "MANAGER")

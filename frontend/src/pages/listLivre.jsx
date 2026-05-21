@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { getUser } from "../services/auth";
 import "./listLivre.css";
 
 const ListLivre = () => {
     const [livres, setLivres] = useState([]);
-    const [categories, setCategories] = useState([]); // État ajouté pour les catégories
+    const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterCategorie, setFilterCategorie] = useState("");
-    
+
     const navigate = useNavigate();
     const API_URL = "http://localhost:8080/api/livres";
 
-    useEffect(() => {
-        fetchData();
-    }, []);
+    // Derive permissions from backend response (roles array)
+    const user = getUser();
+    const roles = user?.roles ?? [];
+    const isAdmin   = roles.includes('ADMIN');
+    const canEdit   = roles.includes('MANAGER') || isAdmin;
+
+    useEffect(() => { fetchData(); }, []);
 
     const fetchData = async () => {
         try {
             setLoading(true);
-            // On récupère les livres ET les catégories pour le filtre
             const [resLivres, resCats] = await Promise.all([
                 axios.get(API_URL),
                 axios.get("http://localhost:8080/api/categories")
@@ -34,15 +38,12 @@ const ListLivre = () => {
         }
     };
 
-    // Logique de filtrage (Calculée à chaque rendu)
     const livresFiltres = livres.filter(livre => {
-        const matchesSearch = 
-            livre.titre.toLowerCase().includes(searchTerm.toLowerCase()) || 
-            livre.isbn.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        const matchesSearch =
+            livre.titre.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            livre.isbn.toLowerCase().includes(searchTerm.toLowerCase()) ||
             (livre.details?.auteur && livre.details.auteur.toLowerCase().includes(searchTerm.toLowerCase()));
-        
         const matchesCategorie = filterCategorie === "" || livre.categorie?.libelle === filterCategorie;
-        
         return matchesSearch && matchesCategorie;
     });
 
@@ -66,12 +67,14 @@ const ListLivre = () => {
                     <h2>Liste des livres</h2>
                     <p><strong>{livresFiltres.length}</strong> livres trouvés</p>
                 </div>
-                <button className="btn-add" onClick={() => navigate('/ajouter-livre')}>
-                    + Ajouter un livre
-                </button>
+                {/* Only MANAGER/ADMIN see the add button */}
+                {canEdit && (
+                    <button className="btn-add" onClick={() => navigate('/ajouter-livre')}>
+                        + Ajouter un livre
+                    </button>
+                )}
             </div>
 
-            {/* Barre de recherche et filtres */}
             <div className="filter-bar">
                 <input
                     type="text"
@@ -80,16 +83,14 @@ const ListLivre = () => {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="filter-input"
                 />
-                <select 
-                    value={filterCategorie} 
-                    onChange={(e) => setFilterCategorie(e.target.value)} 
+                <select
+                    value={filterCategorie}
+                    onChange={(e) => setFilterCategorie(e.target.value)}
                     className="filter-select"
                 >
                     <option value="">Toutes les catégories</option>
                     {categories.map((cat) => (
-                        <option key={cat.id} value={cat.libelle}>
-                            {cat.libelle}
-                        </option>
+                        <option key={cat.id} value={cat.libelle}>{cat.libelle}</option>
                     ))}
                 </select>
             </div>
@@ -104,41 +105,36 @@ const ListLivre = () => {
                             <th>Pages</th>
                             <th>Rayon</th>
                             <th>Auteur</th>
-                            <th>Actions</th>
+                            {canEdit && <th>Actions</th>}
                         </tr>
                     </thead>
                     <tbody>
-                        {/* CRITIQUE : Utiliser livresFiltres ici au lieu de livres */}
                         {livresFiltres.map((livre) => (
                             <tr key={livre.id}>
-                                <td style={{fontWeight: '600'}}>{livre.titre}</td>
+                                <td style={{ fontWeight: '600' }}>{livre.titre}</td>
                                 <td>{livre.isbn}</td>
-                                <td>
-                                    <span className="badge-category">
-                                        {livre.categorie?.libelle || "N/A"}
-                                    </span>
-                                </td>
+                                <td><span className="badge-category">{livre.categorie?.libelle || "N/A"}</span></td>
                                 <td>{livre.details?.nombrePages || "-"}</td>
                                 <td>{livre.details?.emplacementRayon || "-"}</td>
                                 <td>{livre.details?.auteur || "-"}</td>
-                                <td>
-                                    <div className="actions-cell">
-                                        <button className="btn-edit" onClick={() => navigate(`/modifier-livre/${livre.id}`)}>
-                                            Modifier
-                                        </button>
-                                        <button className="btn-delete" onClick={() => handleDelete(livre.id)}>
-                                            Supprimer
-                                        </button>
-                                    </div>
-                                </td>
+                                {canEdit && (
+                                    <td>
+                                        <div className="actions-cell">
+                                            <button className="btn-edit" onClick={() => navigate(`/modifier-livre/${livre.id}`)}>
+                                                Modifier
+                                            </button>
+                                            <button className="btn-delete" onClick={() => handleDelete(livre.id)}>
+                                                Supprimer
+                                            </button>
+                                        </div>
+                                    </td>
+                                )}
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                
-                {/* Message si aucun résultat */}
                 {livresFiltres.length === 0 && (
-                    <div style={{textAlign: 'center', padding: '20px', color: '#666'}}>
+                    <div style={{ textAlign: 'center', padding: '20px', color: '#666' }}>
                         Aucun livre ne correspond à votre recherche.
                     </div>
                 )}

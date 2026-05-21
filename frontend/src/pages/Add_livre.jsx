@@ -71,7 +71,7 @@ const AjouterLivre = () => {
         try {
             await axios.post("http://localhost:8080/api/livres", livreData);
             alert("Livre ajouté avec succès");
-            navigate("/ListLivres");
+            navigate("/listLivres");
         } catch (error) {
             console.error("Erreur lors de l'ajout du livre:", error);
             alert("Erreur lors de l'ajout du livre");
@@ -167,7 +167,7 @@ const AjouterLivre = () => {
                 </div>
 
                 <div className="button-group">
-                    <button type="button" className="btn-cancel" onClick={() => navigate("/ListLivres")}>
+                    <button type="button" className="btn-cancel" onClick={() => navigate("/listLivres")}>
                         Annuler
                     </button>
                     <button type="submit" className="btn-save">

@@ -1,0 +1,110 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@1&family=DM+Sans:wght@400;500&display=swap');
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  height: 60px;
+  background: #13121a;
+  border-bottom: 1px solid rgba(138, 43, 226, 0.18);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.navbar-brand {
+  font-family: 'DM Serif Display', serif;
+  font-style: italic;
+  color: #e8e0f0;
+  font-size: 1.25rem;
+  text-decoration: none;
+  letter-spacing: -0.01em;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navbar-links a {
+  color: #9d8fb0;
+  text-decoration: none;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.87rem;
+  font-weight: 400;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+}
+
+.navbar-links a:hover {
+  color: #e8e0f0;
+  background: rgba(138, 43, 226, 0.1);
+}
+
+.navbar-links a.active {
+  color: #c084fc;
+  background: rgba(138, 43, 226, 0.12);
+}
+
+.navbar-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar-username {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  color: #7a6e8a;
+}
+
+.navbar-role-badge {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.navbar-role-badge.ADMIN {
+  background: rgba(220, 38, 38, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(220, 38, 38, 0.25);
+}
+
+.navbar-role-badge.MANAGER {
+  background: rgba(234, 179, 8, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(234, 179, 8, 0.2);
+}
+
+.navbar-role-badge.USER {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.navbar-logout {
+  background: none;
+  border: 1px solid rgba(138, 43, 226, 0.25);
+  color: #9d8fb0;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.82rem;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.navbar-logout:hover {
+  background: rgba(138, 43, 226, 0.1);
+  color: #e8e0f0;
+  border-color: rgba(138, 43, 226, 0.45);
+}

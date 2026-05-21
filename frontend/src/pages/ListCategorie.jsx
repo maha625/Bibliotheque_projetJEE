@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import "./ListCategorie.css"; // Importation du fichier CSS
+import { getUser } from '../services/auth';
 
 const ListCategorie = () => {
     const navigate = useNavigate();
