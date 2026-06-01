@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getUser } from '../services/auth';
+import axios from 'axios';
+import {
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell
+} from 'recharts';
+import './Dashboard.css';
 
+// ── Carte de navigation (inchangée) ─────────────────────────────────
 const Card = ({ to, emoji, title, desc }) => {
   const [hovered, setHovered] = React.useState(false);
   return (
@@ -15,8 +21,8 @@ const Card = ({ to, emoji, title, desc }) => {
       transform: hovered ? 'translateY(-2px)' : 'none',
       transition: 'border-color 0.2s, transform 0.15s',
     }}
-    onMouseEnter={() => setHovered(true)}
-    onMouseLeave={() => setHovered(false)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
     >
       <div style={{ fontSize: '1.8rem', marginBottom: '10px' }}>{emoji}</div>
       <div style={{ color: '#e8e0f0', fontWeight: 500, marginBottom: '6px', fontFamily: "'DM Sans', sans-serif" }}>{title}</div>
@@ -25,35 +31,132 @@ const Card = ({ to, emoji, title, desc }) => {
   );
 };
 
+// ── Couleurs pour le bar chart ───────────────────────────────────────
+const COLORS = ['#c084fc', '#818cf8', '#38bdf8', '#34d399', '#fb923c', '#f472b6'];
+
+// ── Composant principal ──────────────────────────────────────────────
 const Dashboard = () => {
   const user = getUser();
   const roles = user?.roles ?? [];
   const isAdmin   = roles.includes('ADMIN');
   const isManager = roles.includes('MANAGER') || isAdmin;
 
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios.get('/api/export/stats')
+      .then(res => setStats(res.data))
+      .catch(() => setStats(null))
+      .finally(() => setLoading(false));
+  }, []);
+
+const handleExport = async (type) => {
+  const token = sessionStorage.getItem('token');  // ← sessionStorage, pas localStorage
+
+  if (!token) {
+    alert('Token introuvable, veuillez vous reconnecter.');
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:8080/api/export/${type}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+
+    if (!response.ok) {
+      const text = await response.text();
+      alert(`Erreur ${response.status}: ${text}`);
+      return;
+    }
+
+    const blob = await response.blob();
+    const url  = window.URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = type === 'pdf' ? 'catalogue_livres.pdf' : 'catalogue_livres.xlsx';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    alert('Erreur réseau : ' + err.message);
+  }
+};
+
   return (
-    <div style={{ maxWidth: '900px', margin: '48px auto', padding: '0 24px' }}>
-      <div style={{ marginBottom: '36px' }}>
-        <h1 style={{
-          fontFamily: "'DM Serif Display', serif",
-          fontStyle: 'italic',
-          color: '#e8e0f0',
-          fontSize: '2.4rem',
-          margin: '0 0 8px',
-        }}>
-          Bonjour, {user?.username} 👋
-        </h1>
-        <p style={{ color: '#7a6e8a', margin: 0, fontFamily: "'DM Sans', sans-serif" }}>
-          Que souhaitez-vous faire aujourd'hui ?
-        </p>
+    <div className="dashboard-wrapper">
+      {/* Greeting */}
+      <div className="dashboard-greeting">
+        <h1>Bonjour, {user?.username} 👋</h1>
+        <p>Tableau de bord de la bibliothèque</p>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px' }}>
-        <Card to="/listLivres"        emoji="📚" title="Catalogue des livres"    desc="Consulter, rechercher et filtrer les livres" />
-        {isManager && <Card to="/ajouter-livre"    emoji="➕" title="Ajouter un livre"       desc="Enregistrer un nouveau titre" />}
-        {isManager && <Card to="/listCategorie"    emoji="🏷️" title="Catégories"             desc="Gérer les catégories du catalogue" />}
-        {isManager && <Card to="/ajouter-categorie" emoji="🆕" title="Ajouter une catégorie" desc="Créer une nouvelle catégorie" />}
-        {isAdmin   && <Card to="/admin/users"      emoji="👥" title="Utilisateurs"           desc="Gérer le personnel et les accès" />}
+      {/* KPI Cards */}
+      {!loading && stats && (
+        <div className="kpi-grid">
+          <div className="kpi-card">
+            <div className="kpi-emoji">📚</div>
+            <div className="kpi-value">{stats.totalLivres}</div>
+            <div className="kpi-label">Livres</div>
+          </div>
+          <div className="kpi-card">
+            <div className="kpi-emoji">🏷️</div>
+            <div className="kpi-value">{stats.totalCategories}</div>
+            <div className="kpi-label">Catégories</div>
+          </div>
+          {isAdmin && (
+            <div className="kpi-card">
+              <div className="kpi-emoji">👥</div>
+              <div className="kpi-value">{stats.totalUsers}</div>
+              <div className="kpi-label">Utilisateurs</div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Graphique livres par catégorie */}
+      {!loading && stats?.livresParCategorie?.length > 0 && (
+        <div className="chart-section">
+          <h3>📊 Livres par catégorie</h3>
+          <ResponsiveContainer width="100%" height={220}>
+            <BarChart data={stats.livresParCategorie} margin={{ top: 0, right: 16, left: 0, bottom: 0 }}>
+              <XAxis dataKey="categorie" tick={{ fill: '#7a6e8a', fontSize: 12 }} />
+              <YAxis tick={{ fill: '#7a6e8a', fontSize: 12 }} allowDecimals={false} />
+              <Tooltip
+                contentStyle={{ background: '#1e1c28', border: '1px solid #3b0764', color: '#e8e0f0' }}
+                cursor={{ fill: 'rgba(138,43,226,0.1)' }}
+              />
+              <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                {stats.livresParCategorie.map((_, index) => (
+                  <Cell key={index} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      )}
+
+      {/* Boutons export — réservés MANAGER/ADMIN */}
+      {isManager && (
+        <div className="export-bar">
+          <button className="btn-export pdf" onClick={() => handleExport('pdf')}>
+            📄 Exporter PDF
+          </button>
+          <button className="btn-export excel" onClick={() => handleExport('excel')}>
+            📊 Exporter Excel
+          </button>
+        </div>
+      )}
+
+      {/* Cartes de navigation (identiques à l'original) */}
+      <div className="nav-cards-grid">
+        <Card to="/listLivres"         emoji="📚" title="Catalogue des livres"    desc="Consulter, rechercher et filtrer les livres" />
+        {isManager && <Card to="/ajouter-livre"     emoji="➕" title="Ajouter un livre"       desc="Enregistrer un nouveau titre" />}
+        {isManager && <Card to="/listCategorie"     emoji="🏷️" title="Catégories"             desc="Gérer les catégories du catalogue" />}
+        {isManager && <Card to="/ajouter-categorie" emoji="🆕" title="Ajouter une catégorie"  desc="Créer une nouvelle catégorie" />}
+        {isAdmin   && <Card to="/admin/users"       emoji="👥" title="Utilisateurs"           desc="Gérer le personnel et les accès" />}
       </div>
     </div>
   );
